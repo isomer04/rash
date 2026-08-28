@@ -1,0 +1,18 @@
+{
+  "name": "Rash",
+  "short_name": "Rash",
+  "description": "Portfolio intelligence and financial planning",
+  "theme_color": "#17212B",
+  "background_color": "#F1F1F1",
+  "display": "standalone",
+  "scope": "/",
+  "start_url": "/dashboard",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

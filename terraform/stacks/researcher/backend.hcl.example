@@ -1,0 +1,10 @@
+# Copy to backend.hcl (gitignored) and fill in from stacks/bootstrap outputs.
+bucket = "rash-tfstate-<AWS_ACCOUNT_ID>"
+key    = "researcher/terraform.tfstate"
+region = "<AWS_REGION>"
+
+encrypt = true
+
+# S3-native locking (GA in Terraform 1.11). Replaces the deprecated
+# DynamoDB lock table; no extra infrastructure required.
+use_lockfile = true

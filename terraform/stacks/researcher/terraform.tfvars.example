@@ -1,0 +1,29 @@
+# Part 4: Researcher Agent Configuration
+# Copy this file to terraform.tfvars and update with your values
+
+# Your AWS region for the researcher Lambda (any region that supports Lambda;
+# Bedrock inference is reached cross-region and is configured separately)
+aws_region = "us-east-1"
+
+# Your OpenAI API key (get from https://platform.openai.com/api-keys)
+openai_api_key = "sk-..."
+
+# API endpoint from Part 3 (get from Terraform output or API Gateway console)
+rash_api_endpoint = "https://xxxxxxxxxx.execute-api.us-east-1.amazonaws.com/prod/ingest"
+
+# API key from Part 3 (get from API Gateway console)
+rash_api_key = "your-api-key-here"
+
+# Enable automated research scheduler (optional, default is false).
+# This is the main Bedrock cost driver: each run spends tokens whether or not
+# anyone is using the app. Leave it false unless you want the knowledge base
+# growing on its own.
+scheduler_enabled = false
+
+# How often the scheduler runs. rate(2 hours) is 12 runs a day and roughly 12x
+# the token spend of the default.
+# research_schedule_expression = "rate(1 day)"
+
+# Hard ceiling on concurrent researcher invocations. The Function URL is public
+# and unauthenticated, so this bounds what a stranger can spend on your account.
+# researcher_reserved_concurrency = 2

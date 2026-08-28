@@ -1,0 +1,21 @@
+# Part 5: DynamoDB database configuration
+# Copy this file to terraform.tfvars and update with your values.
+
+aws_region   = "us-east-1"
+table_prefix = "rash"
+
+# On-demand billing has no provisioned idle capacity.
+enable_point_in_time_recovery = true
+dynamodb_deletion_protection  = false
+
+# Existing Aurora migration only:
+# 1. Keep true while creating DynamoDB and copying/verifying data.
+# 2. Set false only after all Lambda functions use DynamoDB successfully.
+retain_aurora_for_migration  = false
+create_final_aurora_snapshot = true
+
+# These apply only while the legacy Aurora cluster is retained. PostgreSQL 15.12
+# supports auto-pause at 0 ACU; the first request after a pause has resume latency.
+min_capacity                     = 0
+max_capacity                     = 1.0
+aurora_seconds_until_auto_pause = 300

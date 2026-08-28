@@ -1,0 +1,494 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Escape hatch. The primary light/dark mechanism is `@theme inline` + the
+   `--rash-*` role blocks below: one utility resolves in both themes with no
+   `dark:` duplication. This variant exists for the rare case where a
+   `dark:`-prefixed utility is genuinely clearer than a token. Every use of it
+   requires a comment justifying why a token could not express the difference.
+   --------------------------------------------------------------------------- */
+@custom-variant dark (&:where(:root[data-theme="dark"] *));
+
+/* ---------------------------------------------------------------------------
+   TIER 1 — role variables. The only place a colour literal appears.
+   Values transcribed from `docs/DESIGN_SYSTEM.md` sections 3.1 (light), 3.2 (dark)
+   and 3.3 (chart series), which is the source of truth for every number here.
+
+   Light is the base `:root` block so an attribute-less document still renders.
+   Both theme blocks are written as `:root[data-theme="…"]` (0,2,0) so they
+   outrank the base `:root` block (0,1,0) regardless of source order, and cannot
+   collide with each other because only one attribute value matches at a time.
+   --------------------------------------------------------------------------- */
+:root {
+  /* surfaces */
+  --rash-surface: #F1F1F1;
+  --rash-surface-raised: #FAFAFA;
+  --rash-surface-sunken: #E6E6E6;
+  --rash-surface-overlay: rgb(20 20 20 / 0.58);
+
+  /* text */
+  --rash-text: #141414;
+  --rash-text-secondary: #454545;
+  --rash-text-muted: #666666;
+  --rash-text-inverse: #F7F7F7;
+
+  /* borders */
+  --rash-border: #D4D4D4;
+  --rash-border-strong: #868686;
+
+  /* accent — ink, one step cooler than the text ink */
+  --rash-accent: #17212B;
+  --rash-accent-hover: #0D141B;
+  --rash-accent-fg: #FFFFFF;
+  --rash-accent-soft: color-mix(in oklab, #17212B 6%, #FAFAFA);
+
+  /* agent — the one saturated voice in chrome */
+  --rash-agent: #6A3D7A;
+  --rash-agent-fg: #FFFFFF;
+  --rash-agent-soft: color-mix(in oklab, #6A3D7A 10%, #FAFAFA);
+
+  /* value tones */
+  --rash-positive: #12704F;
+  --rash-positive-soft: color-mix(in oklab, #12704F 10%, #FAFAFA);
+  --rash-negative: #B4231F;
+  --rash-negative-soft: color-mix(in oklab, #B4231F 10%, #FAFAFA);
+  --rash-warning: #8A5D06;
+  --rash-warning-fill: #F0B429;
+  --rash-warning-fg: #2A1F05;
+  --rash-warning-soft: color-mix(in oklab, #F0B429 14%, #FAFAFA);
+
+  /* focus + shadow base */
+  --rash-focus: #17212B;
+  --rash-shadow: #141414;
+
+  /* chart series — ordered for adjacent separation */
+  --rash-chart-1: #2E3A46;
+  --rash-chart-2: #6A3D7A;
+  --rash-chart-3: #12704F;
+  --rash-chart-4: #8A5D06;
+  --rash-chart-5: #3E6C8E;
+  --rash-chart-6: #8C3B5C;
+
+  /* composed elevation blur, kept in tier 1 so the no-color-mix fallback can
+     replace it without touching the `@theme inline` composition */
+  --rash-shadow-float-blur: 0 6px 16px -8px color-mix(in oklab, var(--rash-shadow) 30%, transparent);
+  --rash-shadow-overlay-blur: 0 24px 56px -16px color-mix(in oklab, var(--rash-shadow) 45%, transparent);
+
+  /* glow-pulse stops, resolved from the agent token in both themes */
+  --rash-glow-near: color-mix(in oklab, var(--rash-agent) 50%, transparent);
+  --rash-glow-far: color-mix(in oklab, var(--rash-agent) 30%, transparent);
+  --rash-glow-near-strong: color-mix(in oklab, var(--rash-agent) 80%, transparent);
+  --rash-glow-far-strong: color-mix(in oklab, var(--rash-agent) 50%, transparent);
+
+  /* typeface role variables, published from `_app.tsx` by `next/font` */
+  --rash-font-display: "IBM Plex Sans Condensed";
+  --rash-font-sans: "IBM Plex Sans";
+  --rash-font-mono: "IBM Plex Mono";
+}
+
+:root[data-theme="light"] {
+  --rash-surface: #F1F1F1;
+  --rash-surface-raised: #FAFAFA;
+  --rash-surface-sunken: #E6E6E6;
+  --rash-surface-overlay: rgb(20 20 20 / 0.58);
+
+  --rash-text: #141414;
+  --rash-text-secondary: #454545;
+  --rash-text-muted: #666666;
+  --rash-text-inverse: #F7F7F7;
+
+  --rash-border: #D4D4D4;
+  --rash-border-strong: #868686;
+
+  --rash-accent: #17212B;
+  --rash-accent-hover: #0D141B;
+  --rash-accent-fg: #FFFFFF;
+  --rash-accent-soft: color-mix(in oklab, #17212B 6%, #FAFAFA);
+
+  --rash-agent: #6A3D7A;
+  --rash-agent-fg: #FFFFFF;
+  --rash-agent-soft: color-mix(in oklab, #6A3D7A 10%, #FAFAFA);
+
+  --rash-positive: #12704F;
+  --rash-positive-soft: color-mix(in oklab, #12704F 10%, #FAFAFA);
+  --rash-negative: #B4231F;
+  --rash-negative-soft: color-mix(in oklab, #B4231F 10%, #FAFAFA);
+  --rash-warning: #8A5D06;
+  --rash-warning-fill: #F0B429;
+  --rash-warning-fg: #2A1F05;
+  --rash-warning-soft: color-mix(in oklab, #F0B429 14%, #FAFAFA);
+
+  --rash-focus: #17212B;
+  --rash-shadow: #141414;
+
+  --rash-chart-1: #2E3A46;
+  --rash-chart-2: #6A3D7A;
+  --rash-chart-3: #12704F;
+  --rash-chart-4: #8A5D06;
+  --rash-chart-5: #3E6C8E;
+  --rash-chart-6: #8C3B5C;
+}
+
+:root[data-theme="dark"] {
+  /* achromatic coal, not blue-black; elevation reads through lightness */
+  --rash-surface: #121212;
+  --rash-surface-raised: #1A1A1A;
+  --rash-surface-sunken: #0C0C0C;
+  --rash-surface-overlay: rgb(0 0 0 / 0.66);
+
+  --rash-text: #EDEDED;
+  --rash-text-secondary: #B3B3B3;
+  --rash-text-muted: #8A8A8A;
+  --rash-text-inverse: #121212;
+
+  --rash-border: #2B2B2B;
+  --rash-border-strong: #6E6E6E;
+
+  /* the accent inverts to paper, so the primary action is again the
+     maximum-contrast surface */
+  --rash-accent: #EDEDED;
+  --rash-accent-hover: #FFFFFF;
+  --rash-accent-fg: #121212;
+  --rash-accent-soft: color-mix(in oklab, #EDEDED 10%, #1A1A1A);
+
+  --rash-agent: #C79BD8;
+  --rash-agent-fg: #121212;
+  --rash-agent-soft: color-mix(in oklab, #C79BD8 16%, #1A1A1A);
+
+  --rash-positive: #4ED09A;
+  --rash-positive-soft: color-mix(in oklab, #4ED09A 14%, #1A1A1A);
+  --rash-negative: #FF8078;
+  --rash-negative-soft: color-mix(in oklab, #FF8078 14%, #1A1A1A);
+  --rash-warning: #F0B429;
+  --rash-warning-fill: #F0B429;
+  --rash-warning-fg: #2A1F05;
+  --rash-warning-soft: color-mix(in oklab, #F0B429 16%, #1A1A1A);
+
+  --rash-focus: #EDEDED;
+  /* overlay shadows deepen rather than wash out */
+  --rash-shadow: #000000;
+
+  --rash-chart-1: #C8CDD3;
+  --rash-chart-2: #C79BD8;
+  --rash-chart-3: #4ED09A;
+  --rash-chart-4: #F0B429;
+  --rash-chart-5: #79B4D8;
+  --rash-chart-6: #F0899F;
+}
+
+/* ---------------------------------------------------------------------------
+   TIER 2 — theme namespace. `inline` is load-bearing: the generated utility
+   inlines the *value*, so `bg-surface` emits `background-color:
+   var(--rash-surface)` and re-resolves under whichever `[data-theme]` block is
+   in scope. One class, two themes.
+   --------------------------------------------------------------------------- */
+@theme inline {
+  /* --- semantic colour roles ------------------------------------------- */
+  --color-surface: var(--rash-surface);
+  --color-surface-raised: var(--rash-surface-raised);
+  --color-surface-sunken: var(--rash-surface-sunken);
+  --color-surface-overlay: var(--rash-surface-overlay);
+
+  --color-text: var(--rash-text);
+  --color-text-secondary: var(--rash-text-secondary);
+  --color-text-muted: var(--rash-text-muted);
+  --color-text-inverse: var(--rash-text-inverse);
+
+  --color-border: var(--rash-border);
+  --color-border-strong: var(--rash-border-strong);
+
+  /* The accent ink is published as `--color-primary` rather than
+     `--color-accent`: `--color-accent` is one of the six migration aliases and
+     continues to resolve to `--rash-warning-fill`, per `design-direction.md`
+     section 5.7. `--color-accent-hover|-fg|-soft` below are the accent-ink
+     companions used by filled controls. */
+  --color-accent-hover: var(--rash-accent-hover);
+  --color-accent-fg: var(--rash-accent-fg);
+  --color-accent-soft: var(--rash-accent-soft);
+
+  --color-agent: var(--rash-agent);
+  --color-agent-fg: var(--rash-agent-fg);
+  --color-agent-soft: var(--rash-agent-soft);
+
+  --color-positive: var(--rash-positive);
+  --color-positive-soft: var(--rash-positive-soft);
+  --color-negative: var(--rash-negative);
+  --color-negative-soft: var(--rash-negative-soft);
+  --color-warning: var(--rash-warning);
+  --color-warning-fill: var(--rash-warning-fill);
+  --color-warning-fg: var(--rash-warning-fg);
+  --color-warning-soft: var(--rash-warning-soft);
+
+  --color-focus: var(--rash-focus);
+
+  --color-chart-1: var(--rash-chart-1);
+  --color-chart-2: var(--rash-chart-2);
+  --color-chart-3: var(--rash-chart-3);
+  --color-chart-4: var(--rash-chart-4);
+  --color-chart-5: var(--rash-chart-5);
+  --color-chart-6: var(--rash-chart-6);
+
+  /* --- TIER 3 — migration aliases -------------------------------------- */
+  /* Keep existing `text-primary` / `bg-ai-accent` call sites resolving during
+     the page-by-page migration. Deprecated: new code uses the semantic name. */
+  --color-primary: var(--rash-accent);
+  --color-ai-accent: var(--rash-agent);
+  --color-accent: var(--rash-warning-fill);
+  --color-dark: var(--rash-text);
+  --color-success: var(--rash-positive);
+  --color-error: var(--rash-negative);
+
+  /* --- type scale ------------------------------------------------------- */
+  --text-2xs: 0.6875rem;
+  --text-2xs--line-height: 1rem;
+  --text-2xs--letter-spacing: 0.08em;
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 1.1rem;
+  --text-sm: 0.8125rem;
+  --text-sm--line-height: 1.25rem;
+  --text-base: 0.9375rem;
+  --text-base--line-height: 1.45rem;
+  --text-lg: 1.0625rem;
+  --text-lg--line-height: 1.55rem;
+  --text-xl: 1.3125rem;
+  --text-xl--line-height: 1.75rem;
+  --text-2xl: 1.625rem;
+  --text-2xl--line-height: 2rem;
+  --text-3xl: 2.125rem;
+  --text-3xl--line-height: 2.25rem;
+  --text-display: clamp(2rem, 3.4vw, 3rem);
+  --text-display--line-height: 1.06;
+
+  /* --- faces ------------------------------------------------------------ */
+  --font-display: var(--rash-font-display), "Helvetica Neue", Arial, sans-serif;
+  --font-sans: var(--rash-font-sans), "Helvetica Neue", Arial, sans-serif;
+  --font-mono: var(--rash-font-mono), "SFMono-Regular", Menlo, Consolas, monospace;
+
+  /* --- spacing ---------------------------------------------------------- */
+  --spacing-hair: 1px;
+  --spacing-tight: 0.375rem;
+  --spacing-snug: 0.5rem;
+  --spacing-base: 1rem;
+  --spacing-loose: 1.25rem;
+  --spacing-section: 2rem;
+  --spacing-page: 3rem;
+
+  /* --- radius ----------------------------------------------------------- */
+  --radius-none: 0;
+  --radius-xs: 1px;
+  --radius-sm: 2px;
+  --radius-md: 3px;
+  --radius-lg: 4px;
+  --radius-pill: 999px;
+
+  /* --- elevation. Only the last two carry blur. ------------------------- */
+  --shadow-hairline: 0 0 0 1px var(--rash-border);
+  --shadow-raise: 0 0 0 1px var(--rash-border), 0 1px 0 0 var(--rash-border);
+  --shadow-float: 0 0 0 1px var(--rash-border-strong), var(--rash-shadow-float-blur);
+  --shadow-overlay: 0 0 0 1px var(--rash-border-strong), var(--rash-shadow-overlay-blur);
+
+  /* --- motion ----------------------------------------------------------- */
+  --duration-quick: 120ms;
+  --duration-base: 180ms;
+  --duration-slow: 280ms;
+  --duration-loop: 1600ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.45, 0, 0.55, 1);
+}
+
+/* ---------------------------------------------------------------------------
+   Numeric treatment as a real utility rather than a repeated class stack.
+   --------------------------------------------------------------------------- */
+@utility num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1, "zero" 1;
+  letter-spacing: -0.01em;
+  text-align: end;
+  white-space: nowrap;
+}
+
+@utility num-left {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1, "zero" 1;
+  letter-spacing: -0.01em;
+  text-align: start;
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------------------
+   Document defaults. Both themes are declared above, so the page surface and
+   text follow `data-theme` with no per-element work.
+   --------------------------------------------------------------------------- */
+body {
+  background-color: var(--rash-surface);
+  color: var(--rash-text);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--text-base--line-height);
+}
+
+/* ---------------------------------------------------------------------------
+   Animations. Interaction durations stay inside the 120–400ms band; the loop
+   duration is 1600ms, inside the 2000ms cap.
+   --------------------------------------------------------------------------- */
+
+/* Agent activity indicator. */
+@keyframes strong-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.95);
+  }
+}
+
+.animate-strong-pulse {
+  animation: strong-pulse var(--duration-loop) var(--ease-in-out) infinite;
+}
+
+/* Glow for active agents. Stops resolve from the agent token, so the glow
+   follows the theme instead of a hard-coded purple. */
+@keyframes glow-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 20px var(--rash-glow-near), 0 0 40px var(--rash-glow-far);
+  }
+  50% {
+    opacity: 0.7;
+    box-shadow: 0 0 30px var(--rash-glow-near-strong), 0 0 60px var(--rash-glow-far-strong);
+  }
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse var(--duration-loop) var(--ease-in-out) infinite;
+}
+
+/* Toast entry. */
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in var(--duration-base) var(--ease-out);
+}
+
+/* Section and panel entry. 4px, not 8px — a direction with no card lift should
+   not have content that lifts either. */
+@keyframes fade-rise {
+  from {
+    transform: translateY(4px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-fade-rise {
+  animation: fade-rise var(--duration-slow) var(--ease-out);
+}
+
+/* Skeleton sweep, replacing `animate-pulse` on a grey block. */
+@keyframes shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+.animate-shimmer {
+  background-image: linear-gradient(
+    90deg,
+    var(--rash-surface-sunken) 0%,
+    var(--rash-surface-raised) 50%,
+    var(--rash-surface-sunken) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer var(--duration-loop) var(--ease-in-out) infinite;
+}
+
+/* ---------------------------------------------------------------------------
+   Theme transition. Added to <html> by the controller for the duration of a
+   theme change and removed on a timer, so nothing animates on first load. The
+   class is skipped entirely when `prefers-reduced-motion` is set, which makes
+   the reduced-motion path an absence of behaviour rather than an override.
+   --------------------------------------------------------------------------- */
+:root.theme-transition,
+:root.theme-transition *,
+:root.theme-transition *::before,
+:root.theme-transition *::after {
+  transition: background-color var(--duration-base) var(--ease-standard),
+    border-color var(--duration-base) var(--ease-standard),
+    color var(--duration-base) var(--ease-standard),
+    fill var(--duration-base) var(--ease-standard),
+    stroke var(--duration-base) var(--ease-standard);
+}
+
+/* ---------------------------------------------------------------------------
+   Reduced motion. The blanket override is the accessibility path and is the one
+   sanctioned exception to the 120–400ms band. Every animated state also carries
+   a static signal, so suppression drops no information.
+   --------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Fallback for engines without `color-mix()`. Every composited value is a tier-1
+   variable, so flat equivalents replace them here without touching the
+   `@theme inline` compositions. Same selectors, later in source order.
+   --------------------------------------------------------------------------- */
+@supports not (color: color-mix(in oklab, red, blue)) {
+  :root,
+  :root[data-theme="light"] {
+    --rash-accent-soft: #ECEDEE;
+    --rash-agent-soft: #ECE7ED;
+    --rash-positive-soft: #E3ECE9;
+    --rash-negative-soft: #F3E5E4;
+    --rash-warning-soft: #F9F0DD;
+    --rash-shadow-float-blur: 0 6px 16px -8px rgb(20 20 20 / 0.3);
+    --rash-shadow-overlay-blur: 0 24px 56px -16px rgb(20 20 20 / 0.45);
+    --rash-glow-near: rgb(106 61 122 / 0.5);
+    --rash-glow-far: rgb(106 61 122 / 0.3);
+    --rash-glow-near-strong: rgb(106 61 122 / 0.8);
+    --rash-glow-far-strong: rgb(106 61 122 / 0.5);
+  }
+
+  :root[data-theme="dark"] {
+    --rash-accent-soft: #2F2F2F;
+    --rash-agent-soft: #362F38;
+    --rash-positive-soft: #21342C;
+    --rash-negative-soft: #3A2827;
+    --rash-warning-soft: #3C331C;
+    --rash-shadow-float-blur: 0 6px 16px -8px rgb(0 0 0 / 0.3);
+    --rash-shadow-overlay-blur: 0 24px 56px -16px rgb(0 0 0 / 0.45);
+    --rash-glow-near: rgb(199 155 216 / 0.5);
+    --rash-glow-far: rgb(199 155 216 / 0.3);
+    --rash-glow-near-strong: rgb(199 155 216 / 0.8);
+    --rash-glow-far-strong: rgb(199 155 216 / 0.5);
+  }
+}
